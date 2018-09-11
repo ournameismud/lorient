@@ -1,0 +1,90 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Lorient Express" %}
+{% set pluginCpUrl = url('lorient') %}
+
+{% set order = craft.lorient.getOrderByHash( orderId ) %}
+{% set cart = craft.lorient.getCartById( order.id ) %}
+{% set address = craft.lorient.getAddressById( order.addressId ) %}
+{% set entries = craft.entries({ id: cart }) %}
+
+{% set tabs = {
+    orers: { label: "Orders"|t, url: url('lorient/orders') }
+} %}
+
+
+{% set fields = 
+	[{ label: 'Title', name: 'title', type: 'dropdown', size: 'small', options: ['Mr','Mrs','Miss','Dr'], required: false },
+	{ label: 'First Name', name: 'firstName', type: 'text', size: 'medium', required: false },
+	{ label: 'Surname', name: 'secondName', type: 'text', size: 'large', required: true },
+	{ label: 'Company', name: 'company', type: 'text', size: 'large', required: true },
+	{ label: 'Address 1', name: 'address1', type: 'text', size: 'large', required: true },
+	{ label: 'Address 2', name: 'address2', type: 'text', size: 'large', required: false },
+     { label: 'State', name: 'state', type: 'text', size: 'medium', required: false },
+	{ label: 'Town/City', name: 'townCity', type: 'text', size: 'medium', required: true },
+	{ label: 'Postcode', name: 'postcode', type: 'text', size: 'medium', required: true },
+	{ label: 'Telephone', name: 'telephone', type: 'text', size: 'medium', required: true },
+	{ label: 'Email', name: 'email', type: 'email', size: 'medium', required: true }]
+ %}
+
+{% block content %}
+
+	<p><a href="{{ url('lorient/orders') }}">Back to Orders</a></p>
+	<h2>Order #{{ order.id }}</h2>
+	<h3>Order Details</h3>
+
+	{% set registeredOwner = false %}    
+	{% if order.owner matches '/^\\d+$/' %}
+		{% set owner = craft.users({ id: order.owner })|first %}
+		{% set registeredOwner = true %}
+	{% else %}
+	{% set owner = order.owner %}
+	{% endif %}
+
+	<table class="data fullwidth">
+		<tr>
+			<th>Date</th>
+			<td>{{ order.dateCreated|date('j M Y') }}</td>
+		</tr>
+		<tr>
+			<th>Ref</th>
+			<td>{{ order.projectRef }}</td>
+		</tr>
+		<tr>
+			<th>Status</th>
+			<td>{{ order.status|ucfirst }}</td>
+		</tr>
+		<tr>
+			<th>Owner</th>
+			<td>
+				{% if registeredOwner %}<a href="{{ url('users/' ~ order.owner) }}" target="_blank">{% endif %}
+				{{ registeredOwner and owner.fullName|length ? owner.fullName : address.firstName ~ ' ' ~ address.secondName }}
+				{% if registeredOwner %}</a>{% endif %}
+				&lt;<a href="mailto:{{ address.email }}" target="_blank">{{ address.email }}</a>&gt;
+			</td>
+		</tr>
+	</table>
+
+	<h3>Products</h3>
+	<table class="data fullwidth">
+	{% for entry in entries %}
+	<tr><td>{# <a href="{{ entry.url }}"> #}{{ entry.title }}{# </a> #}</td></tr>
+	{% endfor %}
+	</table>
+	
+
+	<h3>Address</h3>
+	{% set address = craft.lorient.getAddressById( order.addressId ) %}
+	<table class="data fullwidth">
+	{% for field in fields if address[field.name] is defined and address[field.name]|length %}
+	<tr><th>{{ field.label }}</th><td>{{ address[field.name] }}</td></tr>
+	{% endfor %}
+	</table>
+	</div>
+	
+{% endblock %}
+
+
+{% block details %}
+    {# <p>Wibble</p> #}
+{% endblock %}

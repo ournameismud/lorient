@@ -1,0 +1,118 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Lorient Express" %}
+{% set sort = craft.request.getParam('sort')|length ? craft.request.getParam('sort') : 'id' %}
+{% set by = craft.request.getParam('by')|length ? craft.request.getParam('by') : 'desc' %}
+{% set key = craft.request.getParam('key')|length ? craft.request.getParam('key') : null %}
+{% set value = craft.request.getParam('value')|length ? craft.request.getParam('value') : null %}
+{% set offset = craft.request.getParam('o')|length ? craft.request.getParam('o') : 0 %}
+{% set limit = 20 %}
+{% set pluginCpUrl = url('lorient') %}
+
+
+{% set orders = craft.lorient.getOrdersAll({ sort: sort, by: by, limit: null, key: key, value: value }) %}
+{% set pp = (orders|length / limit)|round(0,'floor') %}
+
+{% set baseUrl = craft.request.url() ~ '?sort=' ~ sort ~ '&by=' ~ by %}
+
+{% set tabs = {
+    orers: { label: "Orders"|t, url: url('lorient/orders') }
+} %}
+
+{# {% block actionButton %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('lorient') }}</a>
+    </div>
+{% endblock %}
+ #}
+
+{% block content %}
+    {# <p class="textline"></p> #}
+
+
+    <h1>Orders{{ key|length and value|length ? ' where ' ~ key|ucfirst ~ ' is "' ~ value|ucfirst ~ '"' }}</h1>
+    <table class="data">
+    	{% set headers = [
+    		{ key: 'id', handle: 'Id', sortable: true },
+    		{ key: 'from', handle: 'From', sortable: false },
+    		{ key: 'dateCreated', handle: 'Date', sortable: true },
+    		{ key: 'projectRef', handle: 'Reference', sortable: false },
+    		{ key: 'status', handle: 'Status', sortable: false },
+    		{ key: 'qty', handle: 'Quantity', sortable: false },
+		] %}
+    <thead>
+    	<tr>
+    		{% for header in headers %}
+    			{% set order = header.key %}
+    			{% set tmpBy = sort == order and by != 'desc' ? 'desc' : 'asc' %}
+    			{% set url = craft.request.url() ~ '?sort=' ~ order ~ '&by=' ~ tmpBy %}
+    			<th>
+    				{% if header.sortable %}<a href="{{ url }}">{% endif %}
+    				{{ header.handle }}
+    				{% if header.sortable %}</a>{% endif %}
+    			</th>
+    		{% endfor %}
+    		<th></th>
+    	</tr>
+    </thead>
+    {% for order in orders|slice(offset,limit) %}
+    {% set cart = craft.lorient.getCartById( order.id ) %}
+    {% set registeredOwner = false %}    
+    {% if order.owner matches '/^\\d+$/' %}
+    {% set owner = craft.users({ id: order.owner })|first %}
+    {% set registeredOwner = true %}
+    {% else %}
+    {% set owner = order.owner %}
+    {% endif %}
+    {% set address = craft.lorient.getAddressById( order.addressId ) %}
+    <tr>
+    	<td>{{ order.id }}</td>
+    	<td>
+    		<a href="{{ url(craft.request.url) ~ '?key=owner&value=' ~ order.owner  }}">
+    			{{ registeredOwner and owner.fullName|length ? owner.fullName : address.firstName ~ ' ' ~ address.secondName }}
+    		</a>
+    	&lt;{{ address.email }}&gt;
+    	</td>
+    	<td>{{ order.dateCreated|date('j M Y') }}</td>
+		<td>{{ order.projectRef }}</td>
+    	<td><a href="{{ url(craft.request.url) ~ '?key=status&value=' ~ order.status  }}">{{ order.status|ucfirst }}</a></td>
+    	<td>{{ cart|length }}</td>
+    	<td><a href="{{ url('lorient/order/' ~ order.id|hash ) }}">Browse Order</a></td>    	
+    </tr>
+    {% endfor %}
+	</table>
+	
+	{% if pp > 1 %}	
+	{% set f = offset - 2 %}
+	{% set f = f < 0 ? 0 : f %}
+	{% set l = offset + 2 %}
+	{% set l = l > (pp-1) ? (pp - 	1) : l %}
+
+	{% if (offset+1) >= (pp * limit) %}
+	<a href="{{ baseUrl ~ '&o=0' }}" class="btn">First</a>
+	<a href="{{ baseUrl ~ '&o=' ~ (offset - (1*limit)) }}" class="btn">Previous</a>
+	{% else %}
+	<a href="#" class="btn disabled">First</a>
+	<a href="#" class="btn disabled">Previous</a>
+	{% endif %}
+
+	{% for i in f..l %}
+		<a href="{{ baseUrl ~ '&o=' ~ (i*limit) }}" class="btn {{ offset == i ? ' active' }}">{{ i + 1 }}</a>
+	{% endfor %}
+
+
+	{% if (offset+1) < (pp * limit) %}
+	<a href="{{ baseUrl ~ '&o=' ~ (offset + (1*limit)) }}" class="btn">Next</a>
+	<a href="{{ baseUrl ~ '&o=' ~ (pp-1) }}" class="btn">Last</a>
+	{% else %}
+	<a href="#" class="btn disabled">Next</a>
+	<a href="#" class="btn disabled">Last</a>
+	{% endif %}
+	{% endif %}
+
+{% endblock %}
+
+
+{% block details %}
+    {# <p>Wibble</p> #}
+{% endblock %}
