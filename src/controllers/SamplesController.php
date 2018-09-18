@@ -229,7 +229,7 @@ class SamplesController extends Controller
         
         $entries = \craft\elements\Entry::find()
             ->section('brochuresSamples')
-            ->type('brochure')
+            ->type($type)
             ->ids();
         
         $user = Craft::$app->getUser();
