@@ -147,7 +147,7 @@ class SamplesController extends Controller
         foreach ($cart AS $row) {
             $tmp = [];
             $element = Craft::$app->getElements()->getElementById($row['element'], null, $site->id);
-            $tmp['id'] = $row['id'];
+            $tmp['id'] = $row['element'];
             $tmp['title'] = $element['title'];
             $tmp['type'] = $element->type['handle'];
             $tmp['specs'] = json_decode($row['specs']);
