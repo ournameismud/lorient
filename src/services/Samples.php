@@ -211,7 +211,7 @@ class Samples extends Component
     // Returns: 
     //      $sample->id (sample id)
 
-    public function addToCart( $element, $userRef, $specs )
+    public function addToCart( $element, $userRef, $specs = null )
     {
         $site = Craft::$app->getSites()->getCurrentSite();
         $sample = SampleRecord::find()
@@ -224,7 +224,7 @@ class Samples extends Component
         
         if (!$sample)  {
             $sample = new SampleRecord;            
-        } else {                    
+        } elseif($specs) {
             $tmpMerge = (array)json_decode($sample->specs);
 
             $vals = ['size','color','finish'];

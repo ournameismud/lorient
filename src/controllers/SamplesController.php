@@ -34,7 +34,7 @@ class SamplesController extends Controller
      *         The actions must be in 'kebab-case'
      * @access protected
      */
-    protected $allowAnonymous = ['add-cart', 'empty-cart', 'adjust-cart', 'remove-cart', 'get-cart'];
+    protected $allowAnonymous = ['add-cart', 'add-all', 'empty-cart', 'adjust-cart', 'remove-cart', 'get-cart'];
     protected $cartName = 'lorient_cart';
 
     // Public Methods
@@ -212,6 +212,49 @@ class SamplesController extends Controller
             return $this->asJson(['response' => 'Item added']);
         } else {
             Craft::$app->getSession()->setNotice('Item added');
+            return $this->redirectToPostedUrl();
+        }        
+    }
+
+
+    public function actionAddAll()
+    {
+        $this->requirePostRequest();
+        $request = Craft::$app->getRequest();        
+        $session = Craft::$app->getSession();
+        $cart = $session[$this->cartName];
+        // get product id
+        $type = $request->getBodyParam('type');
+        $type = $type ? $type : 'brochure';
+        
+        $entries = \craft\elements\Entry::find()
+            ->section('brochuresSamples')
+            ->type('brochure')
+            ->ids();
+        
+        $user = Craft::$app->getUser();
+        if($user->id == null) {
+            if (!$cart) {
+                $cart = Lorient::getInstance()->samples->setCartId();
+                $session->set($this->cartName, $cart);
+            }
+            $userRef = $cart;
+        } else {
+            $userRef = $user->id;
+        }
+
+        // pass array here or loop here?
+        $count = 0;
+        foreach($entries AS $elementId) {
+            $sample = Lorient::getInstance()->samples->addToCart( $elementId, $userRef, null );
+            if ($sample) $count++;
+        }
+
+        if ($request->getAcceptsJson()) {
+            return $this->asJson( ['response' => $count . ' items added'] );
+        } else {
+            Craft::$app->getSession()->setNotice( $count . ' items added' );
+            // echo $count . ' items added';
             return $this->redirectToPostedUrl();
         }        
     }
