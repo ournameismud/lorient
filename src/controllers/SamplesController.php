@@ -250,10 +250,16 @@ class SamplesController extends Controller
             if ($sample) $count++;
         }
 
+        $responseString = $count . ' items added';
+        $response = array(
+            'response' => $responseString,
+            'affected' => $entries
+        );
+
         if ($request->getAcceptsJson()) {
-            return $this->asJson( ['response' => $count . ' items added'] );
+            return $this->asJson( $response );
         } else {
-            Craft::$app->getSession()->setNotice( $count . ' items added' );
+            Craft::$app->getSession()->setNotice( $responseString );
             // echo $count . ' items added';
             return $this->redirectToPostedUrl();
         }        
