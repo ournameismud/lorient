@@ -219,7 +219,7 @@ class SamplesController extends Controller
 
     public function actionAddAll()
     {
-        $this->requirePostRequest();
+        // $this->requirePostRequest();
         $request = Craft::$app->getRequest();        
         $session = Craft::$app->getSession();
         $cart = $session[$this->cartName];
@@ -243,24 +243,29 @@ class SamplesController extends Controller
             $userRef = $user->id;
         }
 
+        $affected = [];
         // pass array here or loop here?
         $count = 0;
         foreach($entries AS $elementId) {
             $sample = Lorient::getInstance()->samples->addToCart( $elementId, $userRef, null );
-            if ($sample) $count++;
+            if ($sample) {
+                $entry = \craft\elements\Entry::find()
+                    ->id($elementId)->one();
+                $affected[] = array('id' => $elementId, 'title' => $entry->title);
+                $count++;
+            }
         }
 
         $responseString = $count . ' items added';
         $response = array(
             'response' => $responseString,
-            'affected' => $entries
+            'affected' => $affected
         );
 
         if ($request->getAcceptsJson()) {
             return $this->asJson( $response );
         } else {
             Craft::$app->getSession()->setNotice( $responseString );
-            // echo $count . ' items added';
             return $this->redirectToPostedUrl();
         }        
     }
