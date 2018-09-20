@@ -67,6 +67,7 @@ class OrdersController extends Controller
         $session = Craft::$app->getSession();
         $cart = $session[$this->cartName];
         $user = Craft::$app->getUser();
+        Craft::dd($cart);
         if($user->id == null) {
             $userRef = $cart;
         } else {
@@ -157,15 +158,15 @@ class OrdersController extends Controller
         $hash = Craft::$app->security->hashData($setOrder->id);
         
         // $url = $request->getBodyParam('redirect');
-        // $url = Craft::$app->getRequest()->getValidatedBodyParam('redirect');
-        // Craft::dd( $url );
+        $url = Craft::$app->getRequest()->getValidatedBodyParam('redirect');
+        
         if ($request->getAcceptsJson()) {
-            return $this->asJson(['response' => 'Order Placed']);
+            return $this->asJson(['response' => 'Order Placed', 'hash' => $hash]);
         } else {
             Craft::$app->getSession()->setNotice('Order Placed');
-            return $this->redirectToPostedUrl();
-        }   
-        // return $this->redirect( $url . '?hash=' . $hash );
+            return $this->redirect( $url . '?hash=' . $hash );
+            // return $this->redirectToPostedUrl();
+        }           
         
     }
 }
