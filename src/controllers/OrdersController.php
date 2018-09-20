@@ -67,7 +67,6 @@ class OrdersController extends Controller
         $session = Craft::$app->getSession();
         $cart = $session[$this->cartName];
         $user = Craft::$app->getUser();
-        Craft::dd($cart);
         if($user->id == null) {
             $userRef = $cart;
         } else {
