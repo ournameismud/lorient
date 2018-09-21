@@ -193,6 +193,42 @@ class LorientVariable
     }
 
     // Name: 
+    //      getSavedOrders
+    // Purpose: 
+    //      get orders by logged in user/session
+    // Context:
+    //      templates/account/index
+    // Required: 
+    //      none
+    // Optional: 
+    //      none
+    // Services:
+    //      $this->getUser
+    // Returns: 
+    //      $orderRecords (order Records)
+         
+    public function getSavedOrders( $sort = 'dateUpdated DESC' )
+    {
+        $userRef = $this->getUser();
+        // abstract to service?
+        $orderRecords = SampleRecord::find()
+            ->where( [ 'owner' => $userRef ] )
+            ->andWhere(['not',['order' => null]])
+            ->orderBy( $sort )  
+            ->all();
+        $products = [];
+        foreach ( $orderRecords AS $order) {
+            $tmp = [
+                'orderId' => $order['order'],
+                'date' => $order['dateUpdated'],
+                'elementId' => $order['element'],
+            ];
+            $products[] = $tmp;
+        }    
+        return $products;
+    }
+    
+    // Name: 
     //      getOrdersAll
     // Purpose: 
     //      get all orders or orders by defined criteria
