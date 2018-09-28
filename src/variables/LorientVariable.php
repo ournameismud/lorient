@@ -107,8 +107,90 @@ class LorientVariable
         $address['owner'] = $userRef;
         // abstract to service?
         $addressRecord = AddressRecord::find()
-            ->where($address)->one();            
+            ->where($address)
+            ->orderby('dateUpdated DESC')
+            ->one();            
         return $addressRecord;
+    }
+    
+
+    public function addressFields()
+    {
+
+        $addressFields = [
+            [
+                'label'=>'Title',
+                'name'=>'title',    
+                'type'=>'dropdown',
+                'size'=>'small',
+                'options'=>['Mr','Mrs','Miss','Dr'],
+                'required' => false
+            ],
+            [
+                'label'=>'First Name',
+                'name'=>'firstName',    
+                'type'=>'text',
+                'size'=>'medium',
+                'required' => false
+            ],
+            [
+                'label'=>'Surname',
+                'name'=>'secondName',    
+                'type'=>'text',
+                'size'=>'large',
+                'required' => true
+            ],
+            [
+                'label'=>'Company',
+                'name'=>'company',    
+                'type'=>'text',
+                'size'=>'large',
+                'required' => true
+            ],
+            [
+                'label'=>'Address 1',
+                'name'=>'address1',    
+                'type'=>'text',
+                'size'=>'large',
+                'required' => true
+            ],
+            [
+                'label'=>'Address 2',
+                'name'=>'address2',    
+                'type'=>'text',
+                'size'=>'large',
+                'required' => false
+            ],
+            [
+                'label'=>'State',
+                'name'=>'state',    
+                'type'=>'text',
+                'size'=>'medium',
+                'required' => false
+            ],
+            [
+                'label'=>'Town/City',
+                'name'=>'townCity',    
+                'type'=>'text',
+                'size'=>'medium',
+                'required' => true
+            ],
+            [
+                'label'=>'Postcode',
+                'name'=>'postcode',    
+                'type'=>'text',
+                'size'=>'medium',
+                'required' => true
+            ],
+            [
+                'label'=>'Telephone',
+                'name'=>'telephone',    
+                'type'=>'text',
+                'size'=>'medium',
+                'required' => true
+            ],
+        ];
+        return $addressFields;
     }
     
     // Name: 
@@ -217,6 +299,7 @@ class LorientVariable
             ->orderBy( $sort )  
             ->all();
         $products = [];
+        Craft::dd($orderRecords);
         foreach ( $orderRecords AS $order) {
             $tmp = [
                 'orderId' => $order['order'],
