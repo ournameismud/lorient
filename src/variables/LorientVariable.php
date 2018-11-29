@@ -299,7 +299,7 @@ class LorientVariable
             ->orderBy( $sort )  
             ->all();
         $products = [];
-        Craft::dd($orderRecords);
+        // Craft::dd($orderRecords);
         foreach ( $orderRecords AS $order) {
             $tmp = [
                 'orderId' => $order['order'],
@@ -449,5 +449,39 @@ class LorientVariable
         $response = array();
         foreach( $cart AS $item) $response[] = $item['element'];
         return $response;
+    }
+
+    public function buildPagination( $current, $limit, $total, $url)
+    {
+        $prevUrl = null;
+        $prevUrls = [];
+        $nextUrl = null;
+        $nextUrls = [];
+        if ($current > 1) {
+            $prevUrl = $url . '?p=' . ($current - 1);
+            $pStart = $current - 3;
+            $pEnd = $current - 1;
+            for ($i = $pStart; $i <= $pEnd; $i++) {
+                if($i > 0) $prevUrls[$i] = $url . '?p=' . $i;
+            }            
+        }
+        if ($current < $total) {
+            $nextUrl = $url . '?p=' . ($current + 1);
+            $nStart = $current + 1;
+            $nEnd = $current + 3;
+            for ($i = $nStart; $i <= $nEnd; $i++) {
+                if($i <= $total) $nextUrls[$i] = $url . '?p=' . $i;
+            }               
+        }
+
+        $pageInfo = array(
+            'prevUrl' => $prevUrl,
+            'getPrevUrls' => $prevUrls,
+            'currentPage' => (int)$current,
+            'nextUrl' => $nextUrl,
+            'getNextUrls' => $nextUrls            
+        );
+
+        return $pageInfo;
     }
 }
