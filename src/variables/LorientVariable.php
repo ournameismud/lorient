@@ -451,7 +451,7 @@ class LorientVariable
         return $response;
     }
 
-    public function buildPagination( $current, $limit, $total, $url, $criteria, $prefix = 'p')
+    public function buildPagination( $current, $limit, $total, $url, $criteria = null, $prefix = 'p', $sort = null)
     {
         $prevUrl = null;
         $prevUrls = [];
@@ -472,6 +472,9 @@ class LorientVariable
         }
         else $url .= '?';
 
+        $baseUrl = $url;
+        if ($sort) $url .= 'sort='. $sort . '&';
+
         if ($current > 1) {
             $prevUrl = $url . $prefix . '=' . ($current - 1);
             $pStart = $current - 3;
@@ -487,11 +490,12 @@ class LorientVariable
             for ($i = $nStart; $i <= $nEnd; $i++) {
                 if($i <= $total) $nextUrls[$i] = $url . $prefix . '=' . $i;
             }               
-        }
+        }        
 
         $pageInfo = array(
             'prevUrl' => $prevUrl,
             'getPrevUrls' => $prevUrls,
+            'baseUrl' => $baseUrl,
             'currentPage' => (int)$current,
             'nextUrl' => $nextUrl,
             'getNextUrls' => $nextUrls            
