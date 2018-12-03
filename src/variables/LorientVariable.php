@@ -451,26 +451,41 @@ class LorientVariable
         return $response;
     }
 
-    public function buildPagination( $current, $limit, $total, $url)
+    public function buildPagination( $current, $limit, $total, $url, $criteria, $prefix = 'p')
     {
         $prevUrl = null;
         $prevUrls = [];
         $nextUrl = null;
         $nextUrls = [];
+        if ($criteria) {
+            $tmp = [];
+            foreach ($criteria AS $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value AS $arrKey => $arrVal) {
+                        $tmp[] = $key . '[]=' . $arrVal; 
+                    }
+                } else {
+                    $tmp[] = $key . '=' .$value; 
+                }
+            }
+            $url .= '?' . implode('&',$tmp) . '&';            
+        }
+        else $url .= '?';
+
         if ($current > 1) {
-            $prevUrl = $url . '?p=' . ($current - 1);
+            $prevUrl = $url . $prefix . '=' . ($current - 1);
             $pStart = $current - 3;
             $pEnd = $current - 1;
             for ($i = $pStart; $i <= $pEnd; $i++) {
-                if($i > 0) $prevUrls[$i] = $url . '?p=' . $i;
+                if($i > 0) $prevUrls[$i] = $url . $prefix . '=' . $i;
             }            
         }
         if ($current < $total) {
-            $nextUrl = $url . '?p=' . ($current + 1);
+            $nextUrl = $url . $prefix . '=' . ($current + 1);
             $nStart = $current + 1;
             $nEnd = $current + 3;
             for ($i = $nStart; $i <= $nEnd; $i++) {
-                if($i <= $total) $nextUrls[$i] = $url . '?p=' . $i;
+                if($i <= $total) $nextUrls[$i] = $url . $prefix . '=' . $i;
             }               
         }
 
