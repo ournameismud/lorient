@@ -76,6 +76,8 @@ class OrdersController extends Controller
         Lorient::getInstance()->orders->modifyOrder( $order, ['status'=>'placed'] );
         Lorient::getInstance()->samples->modifyCart( $userRef, $order );
         
+        Lorient::getInstance()->orders->mailOrder( $order );        
+
         if ($request->getAcceptsJson()) {
             return $this->asJson(['response' => 'Order Confirmed']);
         } else {

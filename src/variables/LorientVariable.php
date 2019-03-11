@@ -16,6 +16,9 @@ use ournameismud\lorient\records\Addresses AS AddressRecord;
 use ournameismud\lorient\records\Orders AS OrderRecord;
 
 use Craft;
+use craft\elements\Entry;
+use craft\elements\Category;
+use craft\elements\Matrix;
 
 /**
  * @author    @cole007
@@ -27,6 +30,46 @@ class LorientVariable
     protected $cartName = 'lorient_cart';
     // Public Methods
     // =========================================================================
+
+    public function getCategories($category)
+    {
+        $site = Craft::$app->getSites()->getCurrentSite();
+        // get all products
+        $products = Entry::find()
+            ->section('products')
+            ->site($site->handle)
+            ->relatedTo([
+                'targetElement' => $category,
+                'field' => 'product_downloads.download_category'
+            ])
+            ->ids(); 
+        $categories = Category::find()
+            ->group('products')
+            ->relatedTo($products)
+            ->all();
+        $output = [];
+        foreach ($categories AS $productCategory) {
+            if ($productCategory->parent) {
+                $parent = $productCategory->parent;
+                $output[$parent->id] = array(
+                    'name' => $parent->title,
+                    'slug' => $parent->slug,
+                    'id' => $parent->id,
+                    'url' => '?c=' . $parent->slug
+                ); 
+            } else {
+                $output[$productCategory->id] = array(
+                    'name' => $productCategory->title,
+                    'slug' => $productCategory->slug,
+                    'id' => $productCategory->id,
+                    'url' => '?c=' . $productCategory->slug
+                ); 
+            }            
+        }
+        // natcasesort($output);
+        return $output;
+    }
+
 
     // Name: 
     //      getFavourites
