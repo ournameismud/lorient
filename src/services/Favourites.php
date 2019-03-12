@@ -58,12 +58,14 @@ class Favourites extends Component
         }
 
         $site = Craft::$app->getSites()->getCurrentSite();   
+        $criteria = [
+            'owner' => $userRef,
+            'siteId' => $site->id
+        ];
+        if ($element) $critiera['element'] = $element;
         $rels = FavouriteRecord::find()
-            ->where([
-                'owner' => $userRef,
-                // 'element' => $element,
-                'siteId' => $site->id
-            ])->all();
+            ->where( $criteria )
+            ->all();
             return $rels;
     }
 

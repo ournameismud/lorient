@@ -147,11 +147,13 @@ class SamplesController extends Controller
         foreach ($cart AS $row) {
             $tmp = [];
             $element = Craft::$app->getElements()->getElementById($row['element'], null, $site->id);
-            $tmp['id'] = $row['element'];
-            $tmp['title'] = $element['title'];
-            $tmp['type'] = $element->type['handle'];
-            $tmp['specs'] = json_decode($row['specs']);
-            $items[] = $tmp;
+            if ($element) {
+                $tmp['id'] = $row['element'];
+                $tmp['title'] = $element['title'];
+                $tmp['type'] = $element->type['handle'];
+                $tmp['specs'] = json_decode($row['specs']);
+                $items[] = $tmp;    
+            }            
         }
         $response = [
             'response' => 'Cart contents',
@@ -225,13 +227,9 @@ class SamplesController extends Controller
         $cart = $session[$this->cartName];
         // get product id
         $type = $request->getBodyParam('type');
+        $context = $request->getBodyParam('context');
         $type = $type ? $type : 'brochure';
-        
-        $entries = \craft\elements\Entry::find()
-            ->section('brochuresSamples')
-            ->type($type)
-            ->ids();
-        
+
         $user = Craft::$app->getUser();
         if($user->id == null) {
             if (!$cart) {
@@ -246,22 +244,44 @@ class SamplesController extends Controller
         $affected = [];
         // pass array here or loop here?
         $count = 0;
-        foreach($entries AS $elementId) {
-            $sample = Lorient::getInstance()->samples->addToCart( $elementId, $userRef, null );
-            if ($sample) {
+        
+        if ($context and $context == 'saved') {
+            $favourites = Lorient::getInstance()->favourites->getFavourites();
+
+            foreach( $favourites AS $favourite) {
                 $entry = \craft\elements\Entry::find()
-                    ->id($elementId)->one();
-                $affected[] = array('id' => $elementId, 'title' => $entry->title);
-                $count++;
+                    ->id( $favourite->element )->type( $type )->one();
+                if ($entry) {                    
+                    $sample = Lorient::getInstance()->samples->addToCart( $favourite->element, $userRef, null );
+                    if ($sample) {
+                        $affected[] = array('id' => $favourite->element, $entry->title);
+                        $count++;    
+                    }                    
+                }
             }
-        }
+        } else {
+            $entries = \craft\elements\Entry::find()
+                ->section('brochuresSamples')
+                ->type($type)
+                ->ids();
+            
+            foreach($entries AS $elementId) {
+                $sample = Lorient::getInstance()->samples->addToCart( $elementId, $userRef, null );
+                if ($sample) {
+                    $entry = \craft\elements\Entry::find()
+                        ->id($elementId)->one();
+                    $affected[] = array('id' => $elementId, 'title' => $entry->title);
+                    $count++;
+                }
+            }
+        }    
 
         $responseString = $count . ' items added';
         $response = array(
             'response' => $responseString,
             'affected' => $affected
-        );
-
+        );    
+        
         if ($request->getAcceptsJson()) {
             return $this->asJson( $response );
         } else {
