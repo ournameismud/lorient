@@ -336,22 +336,30 @@ class LorientVariable
     {
         $userRef = $this->getUser();
         // abstract to service?
-        $orderRecords = SampleRecord::find()
+        
+        $orders = [];
+        $orderRecords = OrderRecord::find()
             ->where( [ 'owner' => $userRef ] )
-            ->andWhere(['not',['order' => null]])
             ->orderBy( $sort )  
             ->all();
-        $products = [];
-        // Craft::dd($orderRecords);
-        foreach ( $orderRecords AS $order) {
-            $tmp = [
-                'orderId' => $order['order'],
-                'date' => $order['dateUpdated'],
-                'elementId' => $order['element'],
-            ];
-            $products[] = $tmp;
-        }    
-        return $products;
+        foreach ($orderRecords AS $order) {
+            $orderItems = [];
+            $orderProducts = SampleRecord::find()
+                ->where( [ 'owner' => $userRef, 'order' => $order->id])
+                ->all();
+            foreach ($orderProducts AS $product) {
+                $orderItems[] = $product->element;
+            }
+            $orders[] = array(
+                'ref' => $order->projectRef,
+                'id' => $order->id,
+                'status' => $order->status,
+                'date' => $order->dateUpdated,
+                'elements' => $orderItems,
+            );
+        }
+        
+        return $orders;
     }
     
     // Name: 
