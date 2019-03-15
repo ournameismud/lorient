@@ -12,6 +12,7 @@ namespace ournameismud\lorient\controllers;
 
 use ournameismud\lorient\Lorient;
 use ournameismud\lorient\records\Addresses AS AddressRecord;
+use ournameismud\lorient\records\Orders AS OrdersRecord;
 
 use Craft;
 use craft\web\Controller;
@@ -47,11 +48,19 @@ class AddressesController extends Controller
         $request = Craft::$app->getRequest();
         $id = $request->getBodyParam('id');
         $user = Craft::$app->getUser();
-        $site = Craft::$app->getSites()->getCurrentSite();
-        $addressRecord = new AddressRecord;
+        $site = Craft::$app->getSites()->getCurrentSite();        
         if ($id) {
-            $addressRecord =  AddressRecord::find()->where(['id' => $id ])->one();                   
-        } 
+            $ordersMatch = OrdersRecord::find()->where(['addressId' => $id ])->all();
+            if(count($ordersMatch) > 0) {
+                $addressRecord = new AddressRecord;
+            } else {
+                $address = AddressRecord::find()->where(['id' => $id ])->one();    
+                if (count($address) > 0) $addressRecord = $address;
+                else $addressRecord = new AddressRecord; 
+            }
+        } else {
+            $addressRecord = new AddressRecord;
+        }
         $addressRecord->owner = $user->id;
         $addressRecord->siteId = $site->id;
         $errors = [];
