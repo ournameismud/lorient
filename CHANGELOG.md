@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.11 - 2019-03-21
+### Fixed
+- cart variables - check if exists before returning
+
 ## 0.0.10 - 2019-03-15
 ### Changed
 - saveAddress() controller updated to check if exists in Order records

@@ -439,12 +439,20 @@ class LorientVariable
          
     public function getCart($id = null)
     {
+        $site = Craft::$app->getSites()->getCurrentSite();
+
         $userRef = $this->getUser();
         // abstract to service?
         $cart = Lorient::getInstance()->samples->getCart( $userRef, $id );
         $response = array();
         foreach( $cart AS $item) $response[] = $item['element'];
-        return $response;
+
+        $products = Entry::find()
+            ->site($site->handle)
+            ->id($response)
+            ->ids(); 
+        
+        return $products;
     }
     
     // Name: 
@@ -467,12 +475,28 @@ class LorientVariable
          
     public function getCartFull($id = null)
     {
+        $site = Craft::$app->getSites()->getCurrentSite();
+
         $userRef = $this->getUser();
         // abstract to service?
         $cart = Lorient::getInstance()->samples->getCart( $userRef, $id );
         $response = array();
-        foreach( $cart AS $item) $response[] = $item;
-        return $response;
+        $ids = array();
+        foreach( $cart AS $item) {
+            $response[$item['element']] = $item;
+            $ids[] = $item['element'];
+        }
+
+        $products = Entry::find()
+            ->site($site->handle)
+            ->id($ids)
+            ->ids(); 
+
+        $output = array();
+        foreach ($products AS $productId) {
+            $output[] = $response[$productId];
+        }    
+        return $output;
     }
 
     // Name: 
@@ -494,12 +518,18 @@ class LorientVariable
          
     public function getCartById( $id )
     {
+        $site = Craft::$app->getSites()->getCurrentSite();
         // $userRef = $this->getUser();
         // // abstract to service?
         $cart = Lorient::getInstance()->samples->getCartByOrder( $id );
         $response = array();
         foreach( $cart AS $item) $response[] = $item['element'];
-        return $response;
+        $products = Entry::find()
+            ->site($site->handle)
+            ->id($response)
+            ->ids(); 
+        
+        return $products;
     }
 
     public function buildPagination( $current, $limit, $total, $url, $criteria = null, $prefix = 'p', $sort = null)
