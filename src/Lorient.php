@@ -59,7 +59,7 @@ class Lorient extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '0.0.11';
+    public $schemaVersion = '0.0.12';
 
     // Public Methods
     // =========================================================================

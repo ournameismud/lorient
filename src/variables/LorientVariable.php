@@ -87,10 +87,22 @@ class LorientVariable
     
     public function getFavourites($element = null)
     {
+        $site = Craft::$app->getSites()->getCurrentSite();
+
         $favourites = Lorient::getInstance()->favourites->getFavourites( $element );
         $response = array();
         foreach( $favourites AS $favourite) $response[] = $favourite['element'];
-        return $response;
+
+        $products = Entry::find()
+            ->site($site->handle)
+            ->id($response)
+            ->ids(); 
+
+        $output = array();
+        foreach ($products AS $productId) {
+            $output[] = (int)$productId;
+        }    
+        return $output;
     }
 
     // Name: 
@@ -334,6 +346,8 @@ class LorientVariable
          
     public function getSavedOrders( $sort = 'dateUpdated DESC' )
     {
+        $site = Craft::$app->getSites()->getCurrentSite();
+
         $userRef = $this->getUser();
         // abstract to service?
         
@@ -350,12 +364,22 @@ class LorientVariable
             foreach ($orderProducts AS $product) {
                 $orderItems[] = $product->element;
             }
+
+            $products = Entry::find()
+                ->site($site->handle)
+                ->id($orderItems)
+                ->ids(); 
+
+            $output = array();
+            foreach ($products AS $productId) {
+                $output[] = $productId;
+            }    
             $orders[] = array(
                 'ref' => $order->projectRef,
                 'id' => $order->id,
                 'status' => $order->status,
                 'date' => $order->dateUpdated,
-                'elements' => $orderItems,
+                'elements' => $output,
             );
         }
         
