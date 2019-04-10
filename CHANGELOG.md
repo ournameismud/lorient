@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.13 - 2019-04-10
+### Fixed
+- issue retrieving non-entry elements when querying cart
+
 ## 0.0.12 - 2019-03-21
 ### Fixed
 - favourites variables - check if element exists before returning

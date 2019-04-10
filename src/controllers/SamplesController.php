@@ -146,7 +146,7 @@ class SamplesController extends Controller
         $items = [];
         foreach ($cart AS $row) {
             $tmp = [];
-            $element = Craft::$app->getElements()->getElementById($row['element'], null, $site->id);
+            $element = Craft::$app->getElements()->getElementById($row['element'], Entry::Class, $site->id);
             if ($element) {
                 $tmp['id'] = $row['element'];
                 $tmp['title'] = $element['title'];
