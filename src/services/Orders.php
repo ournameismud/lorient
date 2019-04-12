@@ -156,7 +156,7 @@ class Orders extends Component
                     $tmpRow .=  "\r\n";
                 }
                 $samples[] = $tmpRow . "\r\n";
-            } else {
+            } elseif ($element) {
                 $brochures[] = $element->title;
             }
         }

@@ -2,7 +2,7 @@
     "name": "ournameismud/lorient",
     "description": "Custom functionality for Lorient CMS",
     "type": "craft-plugin",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "keywords": [
         "craft",
         "cms",
