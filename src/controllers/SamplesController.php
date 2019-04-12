@@ -14,6 +14,7 @@ use ournameismud\lorient\Lorient;
 use ournameismud\lorient\records\Samples AS SampleRecord;
 
 use Craft;
+use craft\elements\Entry;
 use craft\web\Controller;
 use craft\web\Session;
 use craft\records\User;
