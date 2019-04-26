@@ -556,6 +556,30 @@ class LorientVariable
         return $products;
     }
 
+    public function paginateQuery( $info, $query, $count = 5)
+    {
+        $vars = [];        
+        foreach ($query AS $key => $value) $vars[] = $key . '=' . $value;
+        $append = '?' . implode('&', $vars);
+        $response = [];
+        $response['prevUrl'] = $info->prevUrl ? $info->prevUrl . $append : null;
+        $response['nextUrl'] = $info->nextUrl ? $info->nextUrl . $append : null;
+        $response['currentPage'] = $info->currentPage;
+        $prevUrls = [];
+        foreach ($info->getPrevUrls($count) AS $i => $url) {
+            $prevUrls[$i] = $url . $append;
+        }
+        $nextUrls = [];
+        foreach ($info->getNextUrls($count) AS $i => $url) {
+            $nextUrls[$i] = $url . $append;
+        }
+        $response['getPrevUrls'] = $prevUrls ? $prevUrls : null;
+        $response['getNextUrls'] = $nextUrls ? $nextUrls : null;
+
+        return $response;
+    }
+
+
     public function buildPagination( $current, $limit, $total, $url, $criteria = null, $prefix = 'p', $sort = null)
     {
         $prevUrl = null;
