@@ -236,9 +236,8 @@ class Samples extends Component
                     $tmpArr = $tmpMerge[$val];
                 } elseif(array_key_exists($val,$specs)) {
                     $tmpArr = $specs[$val];
-                }
-                $specs[$val] = array_unique($tmpArr);
-            
+                } 
+                if (is_array($tmpArr)) $specs[$val] = array_unique($tmpArr);            
             }
         }
         // $sample = new SampleRecord;

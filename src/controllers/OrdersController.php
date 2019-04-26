@@ -37,6 +37,13 @@ class OrdersController extends Controller
     protected $addressFields = ['title','firstName','secondName','company','address1','address2','townCity','state','postcode','telephone','email'];
     protected $addressFieldsRequired = ['firstName','secondName','company','address1','townCity','postcode','telephone','email'];
     
+    protected function log($message, $category = null) {
+        $file = Craft::getAlias('@storage/logs/lorient.log');
+        $log = date('Y-m-d H:i:s').' '.$message." (".$category.")\n";
+        \craft\helpers\FileHelper::writeToFile($file, $log, ['append' => true]);
+    }
+
+
     // Public Methods
     // =========================================================================
 
@@ -111,7 +118,7 @@ class OrdersController extends Controller
         $request = Craft::$app->getRequest();
 
         $order['orderId'] = $request->getBodyParam('order');
-
+        
         $error = array();
         $address = array();
 
@@ -123,7 +130,6 @@ class OrdersController extends Controller
         } else {
             $userRef = $user->id;
         }
-
         foreach ($this->addressFields AS $field) {
             $address[$field] = $request->getBodyParam($field);
             if (in_array($field,$this->addressFieldsRequired) && strlen(trim($address[$field])) == 0) {
@@ -132,13 +138,19 @@ class OrdersController extends Controller
             }
         }
         if (count($error) > 0) {
-            Craft::$app->getSession()->setError('There was a problem with your submission, please check the form and try again!');
-            Craft::$app->getUrlManager()->setRouteParams([
-                'variables' => ['address' => $address, 'error' => $error]
-            ]);
-            return null;
+            $this->log('Error (User Ref# ' . $userRef . '): ' . json_encode($error), 'Lorient::Orders #143');
+            if ($request->getAcceptsJson()) {
+                return $this->asJson(['response' => 'Error', 'errors' => $errors, 'address' => $address]);
+            } else {
+                Craft::$app->getSession()->setNotice('Order Placed');
+                Craft::$app->getSession()->setError('There was a problem with your submission, please check the form and try again!');
+                Craft::$app->getUrlManager()->setRouteParams([
+                    'variables' => ['address' => $address, 'error' => $error]
+                ]);
+                return null;
+                // return $this->redirectToPostedUrl();
+            }  
         }
-
         $getAddress = Lorient::getInstance()->addresses->getAddress( $address );
         if ($getAddress == null) {
             $getAddress = Lorient::getInstance()->addresses->setAddress( $address, $userRef );

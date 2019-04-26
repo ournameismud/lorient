@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.16 - 2019-04-26
+### Fixed
+- order response via JSON
+
 ## 0.0.14-15 - 2019-04-12
 ### Fixed
 - issue retrieving non-entry elements when querying cart
