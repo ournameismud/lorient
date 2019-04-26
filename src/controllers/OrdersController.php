@@ -140,7 +140,7 @@ class OrdersController extends Controller
         if (count($error) > 0) {
             $this->log('Error (User Ref# ' . $userRef . '): ' . json_encode($error), 'Lorient::Orders #143');
             if ($request->getAcceptsJson()) {
-                return $this->asJson(['response' => 'Error', 'errors' => $errors, 'address' => $address]);
+                return $this->asJson(['response' => 'Error', 'errors' => $error, 'address' => $address]);
             } else {
                 Craft::$app->getSession()->setNotice('Order Placed');
                 Craft::$app->getSession()->setError('There was a problem with your submission, please check the form and try again!');
