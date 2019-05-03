@@ -15,6 +15,7 @@ use ournameismud\lorient\records\Orders AS OrderRecord;
 use ournameismud\lorient\records\Addresses AS AddressRecord;
 
 use Craft;
+use craft\helpers\FileHelper;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\mail\Message;
@@ -149,8 +150,10 @@ class Orders extends Component
                                 $tmpArr[] = end($tmpSrc);
                             }
                             $tmpRow .= ': ' . implode(', ',$tmpArr);
+                        } elseif(is_array($array)) {
+                            $tmpRow .= ': ' . implode(', ',$array);
                         } else {
-                            $tmpRow .= ': ' . implode(', ',$array);      
+                            $tmpRow .= ': ' . $array;
                         }                        
                     } 
                     $tmpRow .=  "\r\n";
@@ -188,7 +191,20 @@ class Orders extends Component
             ->setTo( $address->email )
             ->setSubject( 'Order #' . $id . ' from website' )
             ->setTextBody( $body );
+
+        // > https://craftcms.stackexchange.com/a/27954/992 
+        $file = Craft::getAlias('@storage/logs/lorient.log');
+        
         // send email
-        return $mailer->send( $message );
+        if ($mailer->send( $message )) {
+            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " sent successfully\n";
+            FileHelper::writeToFile($file, $log, ['append' => true]);
+            return true;
+        } else {
+            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " failed to send\n";
+            FileHelper::writeToFile($file, $log, ['append' => true]);
+            return false;
+        }
+        
     }
 }

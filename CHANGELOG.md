@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.1.2 - 2019-05-03
+### Fixed
+- array check on implode (orders->mailOrder()) 
+
+## 0.1.1 - 2019-05-03
+### Changed
+- add logging to order emails (orders->mailOrder()) 
+
 ## 0.1.0 - 2019-04-26
 ### Added
 - new `paginateQuery` variable to build pagination that works with GET parameters
