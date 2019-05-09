@@ -189,6 +189,8 @@ class Orders extends Component
         // define message
         $message = (new Message())
             ->setTo( $address->email )
+            ->setFrom([$email => $site->name])
+            ->setCc([$email => $site->name])
             ->setSubject( 'Order #' . $id . ' from website' )
             ->setTextBody( $body );
 
@@ -197,11 +199,11 @@ class Orders extends Component
         
         // send email
         if ($mailer->send( $message )) {
-            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " sent successfully\n";
+            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " from " . $email . " sent successfully\n";
             FileHelper::writeToFile($file, $log, ['append' => true]);
             return true;
         } else {
-            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " failed to send\n";
+            $log = date('Y-m-d H:i:s').' Mail for Order #'.$id." to " . $address->email . " from ". $email . " failed to send\n";
             FileHelper::writeToFile($file, $log, ['append' => true]);
             return false;
         }

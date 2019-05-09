@@ -138,7 +138,7 @@ class OrdersController extends Controller
             }
         }
         if (count($error) > 0) {
-            $this->log('Error (User Ref# ' . $userRef . '): ' . json_encode($error), 'Lorient::Orders #143');
+            $this->log('Error (User Ref# ' . $userRef . '): ' . json_encode($error), 'Lorient::Orders Order #' . $order['orderId']);
             if ($request->getAcceptsJson()) {
                 return $this->asJson(['response' => 'Error', 'errors' => $error, 'address' => $address]);
             } else {
