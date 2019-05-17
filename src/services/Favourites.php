@@ -100,7 +100,6 @@ class Favourites extends Component
             $favourite->owner = $user;
             $favourite->element  = $element;
             $favourite->siteId  = $site->id;
-            // Craft::dd($favourite);
             $favourite->save();
             $result = 'favourite added';
         } else {

@@ -61,7 +61,7 @@ class FavouritesController extends Controller
         // $elementId = Craft::request->getParam('elementId');
         $elementId = $request->getBodyParam('elementId');
         $user = Craft::$app->getUser();
-        // Craft::dd( $user->id );
+        
         // $userId = $user->id == null ? 'xxx' : $user->id
         // if ($user->id == null) {
             // if ($request->getAcceptsJson()) return $this->asJson(['errors' => 'Not logged in']);
@@ -81,7 +81,7 @@ class FavouritesController extends Controller
             $userRef = $user->id;
         }
         $processFavourite = Lorient::getInstance()->favourites->processFavourite( $userRef, $elementId );
-        // Craft::dd( $processFavourite );
+        
         if ($processFavourite) {
             if ($request->getAcceptsJson()) {
                 return $this->asJson(['response' => $processFavourite]);

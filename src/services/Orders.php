@@ -184,7 +184,6 @@ class Orders extends Component
 
         // $address = Lorient::getInstance()->addresses->getAddress( ['owner' => $owner] );
         // Craft::info( 'Address: ' . $address->id, 'ournameismud\lorient\services\orders\mailOrder:110' );
-        // Craft::dd( $order );
         
         // define message
         $message = (new Message())
