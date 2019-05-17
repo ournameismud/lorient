@@ -162,7 +162,7 @@ class OrdersController extends Controller
         $order['owner'] = $userRef;
         $order['addressId'] = $getAddress->id;
         $order['projectRef'] = $request->getBodyParam('ref');
-        $order['status'] = 'draft';
+        $order['status'] = 'placed';
 
         // TO DO: avoid duplication here?
         $setOrder = Lorient::getInstance()->orders->setOrder( $order );
@@ -173,6 +173,10 @@ class OrdersController extends Controller
         // $url = $request->getBodyParam('redirect');
         $url = Craft::$app->getRequest()->getValidatedBodyParam('redirect');
         
+        // Lorient::getInstance()->orders->modifyOrder( $order, ['status'=>'placed'] );
+        Lorient::getInstance()->samples->modifyCart( $userRef, $setOrder->id );        
+        Lorient::getInstance()->orders->mailOrder( $setOrder->id ); 
+
         if ($request->getAcceptsJson()) {
             return $this->asJson(['response' => 'Order Placed', 'hash' => $hash]);
         } else {
