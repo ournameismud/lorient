@@ -104,6 +104,7 @@ class Orders extends Component
         
         $mailer = Craft::$app->getMailer();
         $email = Craft::$app->config->general->custom['emailRecipient'];
+        $emailName = Craft::$app->config->general->custom['emailName'];
 
         $order = OrderRecord::find()->where(['id'=>$id])->one();
 
@@ -188,8 +189,8 @@ class Orders extends Component
         // define message
         $message = (new Message())
             ->setTo( $address->email )
-            ->setFrom([$email => $site->name])
-            ->setCc([$email => $site->name])
+            ->setFrom([$email => $emailName])
+            ->setCc([$email => $emailName])
             ->setSubject( 'Order #' . $id . ' from website' )
             ->setTextBody( $body );
 
