@@ -18,6 +18,7 @@ use Craft;
 use craft\helpers\FileHelper;
 use craft\base\Component;
 use craft\elements\Entry;
+use craft\elements\Category;
 use craft\mail\Message;
 
 /**
@@ -31,6 +32,17 @@ class Orders extends Component
     // =========================================================================
 
     protected $addressFields = ['title' =>'Title','firstName'=>'First Name','secondName'=>'Second Name','company'=>'Company','address1'=>'Address 1','address2'=>'Address 2','townCity'=>'Town/City','state'=>'State','postcode'=>'Postcode','telephone'=>'Telephone','email'=>'Email'];
+    
+    private function getColor( $color ) {
+        $site = Craft::$app->getSites()->getCurrentSite();
+        $element = Category::find()
+           ->group( 'productColours' )
+           ->productColour( $color )
+           ->siteId( $site->id )
+           ->one();
+        if ($element) return $element->title;
+        else return $color;        
+    }
 
     // Name: modifyOrder
     // Purpose: 
@@ -152,7 +164,17 @@ class Orders extends Component
                             }
                             $tmpRow .= ': ' . implode(', ',$tmpArr);
                         } elseif(is_array($array)) {
-                            $tmpRow .= ': ' . implode(', ',$array);
+                            if ($prop == 'color') {
+                                $tmpRow .= ': ';
+                                $tmpCol = [];
+                                foreach ($array AS $color) {
+                                    $col = $this->getColor($color);
+                                    $tmpCol[] = $col;
+                                }
+                                $tmpRow .= implode(', ',$tmpCol);
+                            } else {
+                                $tmpRow .= ': ' . implode(', ',$array);
+                            }
                         } else {
                             $tmpRow .= ': ' . $array;
                         }                        
