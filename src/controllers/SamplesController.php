@@ -27,6 +27,8 @@ use craft\records\User;
 class SamplesController extends Controller
 {
 
+    public $enableSnaptchaValidation = false;
+    
     // Protected Properties
     // =========================================================================
 

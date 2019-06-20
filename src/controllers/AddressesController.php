@@ -25,6 +25,8 @@ use craft\web\Controller;
 class AddressesController extends Controller
 {
 
+    public $enableSnaptchaValidation = false;
+
     // Protected Properties
     // =========================================================================
 

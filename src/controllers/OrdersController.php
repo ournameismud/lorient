@@ -24,6 +24,8 @@ use craft\web\Session;
 class OrdersController extends Controller
 {
 
+    public $enableSnaptchaValidation = false;
+    
     // Protected Properties
     // =========================================================================
 
