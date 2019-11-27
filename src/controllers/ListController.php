@@ -47,6 +47,20 @@ class ListController extends Controller
         $this->requirePostRequest();
         $request = Craft::$app->getRequest();
 
+        $session = Craft::$app->session->get('signup');
+
+        if($session): //session has already submitted
+            
+            $response = [
+                    'success' => true,
+                    'statusCode' => 201,
+                    'body' => $request->getParam('email')
+                ];;
+
+            return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
+
+        endif;
+
         //check honeypot
         $honeypot =  $request->getParam('preferred-time') ? true : false;
         
@@ -101,6 +115,10 @@ class ListController extends Controller
         // }
 
         $response = CmLists::getInstance()->cmListService->subscribe($listId, $email, $fullName, $additionalFields);
+
+        if($response['success']): 
+            Craft::$app->session->set('signup',true); 
+        endif;
 
         return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
 
