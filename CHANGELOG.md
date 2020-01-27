@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.1.8 - 2020-01-27
+### Fixed
+- Orders->mailOrder(): check if $specs is iterable/array
+
 ## 0.1.7 - 2019-11-27
 ### Added
 - Add session for email list submissions

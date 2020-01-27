@@ -151,7 +151,7 @@ class Orders extends Component
                ->one(); 
             $specs = json_decode($item->specs);
             Craft::info( 'Specs: ' . $item->specs, 'ournameismud\lorient\services\orders\mailOrder:139' );
-            if (count($specs) > 0) {
+            if (is_iterable($specs) && (count($specs) > 0))
                 $tmpRow = $element->title . ": \r\n";
                 foreach($specs AS $prop => $array) {
                     $tmpRow .= ucfirst($prop);
