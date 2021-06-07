@@ -38,50 +38,93 @@ class ListController extends Controller
     // Public Methods
     // =========================================================================
 
-
-    
+    // for testing/dev mode
+    // public $enableSnaptchaValidation = false;
+    // public $enableCsrfValidation = false;
     
     public function actionIndex()
     {
         
+        // See /adapt/deploy/modules/mudmodule/src/MudModule.php:206
+        // get module settings
+        $settings = Craft::$app->config->getConfigFromFile('lorient');
+        // set API Access Key
+        $access_key = $settings['apiLayerKey'];
+
+        // Craft::dd($settings);
         $this->requirePostRequest();
         $request = Craft::$app->getRequest();
 
-        $session = Craft::$app->session->get('signup');
+        // if devmode then ignore spam prevention methods
+        if(!Craft::$app->getConfig()->general->devMode) {
 
-        if($session): //session has already submitted
-            
-            $response = [
-                    'success' => true,
-                    'statusCode' => 201,
-                    'body' => $request->getParam('email')
-                ];;
+            $session = Craft::$app->session->get('signup');
 
-            return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
+            if($session): //session has already submitted
 
-        endif;
+                $response = [
+                        'success' => true,
+                        'statusCode' => 201,
+                        'body' => $request->getParam('email')
+                    ];
 
-        //check honeypot
-        $honeypot =  $request->getParam('preferred-time') ? true : false;
-        
-        if($honeypot):
+                return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
 
-            $response = [
-                    'success' => true,
-                    'statusCode' => 201,
-                    'body' => $request->getParam('email')
-                ];;
+            endif;
 
-            return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
+            //check honeypot
+            $honeypot =  $request->getParam('preferred-time') ? true : false;
 
-        endif;
+            if($honeypot):
+
+                $response = [
+                        'success' => true,
+                        'statusCode' => 201,
+                        'body' => $request->getParam('email')
+                    ];
+
+                return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
+
+            endif;
+
+        }
 
         // Fetch list id from hidden input
         $listId = $request->getRequiredBodyParam('listId') ? Craft::$app->security->validateData($request->post('listId')) : null;
         $redirect =  $request->getParam('redirect') ? Craft::$app->security->validateData($request->post('redirect')) : null;
 
         $additionalFields = array();
-        $email = $request->getParam('email');
+
+        // get email
+        $email = $request->getRequiredBodyParam('email');
+
+        // do spam lookup
+        // Initialize CURL:
+        $ch = curl_init('http://apilayer.net/api/check?access_key='.$access_key.'&email='.$email.'');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Store the data:
+        $json = curl_exec($ch);
+        curl_close($ch);
+
+        // Decode JSON response:
+        $result = json_decode($json, true);
+        // we can work with the result
+        if (is_array($result) && array_key_exists('score', $result)) {
+
+            $score = $result['score'];
+            // do we need smtp_check or catch_all for more rigorous?
+            if ($score < $settings['apiLayerBenchmark']) {
+                $response = [
+                    'success' => true,
+                    'statusCode' => 201,
+                    'body' => $request->getParam('email')
+                ];
+
+                return $request->getBodyParam('redirect') ? $this->redirectToPostedUrl() : $this->asJson($response);
+            }
+        }
+
         $fullName = '';
         if ($request->getParam('fullname') !== null)
             $fullName = $request->getParam('fullname');
@@ -102,17 +145,6 @@ class ListController extends Controller
                 }
             }
         }
-
-        // $subscriber = array(
-        //     'EmailAddress' => $email,
-        //     'Name' => $fullName,
-        //     'CustomFields' => $additionalFields,
-        //     'Resubscribe' => true
-        // );
-
-        // if ($request->getParam('email') !== null) {
-        //     $response = CmLists::getInstance()->campaignmonitor->addSubscriber($listId, $subscriber);
-        // }
 
         $response = CmLists::getInstance()->cmListService->subscribe($listId, $email, $fullName, $additionalFields);
 
