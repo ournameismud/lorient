@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 0.1.10 - 2021-06-07
+### Added
+- Spam prevention methods (Mailboxlayer) newsletter sign-up
+
 ## 0.1.9 - 2020-01-28
 ### Fixed
 - Orders->mailOrder(): missing `{`
