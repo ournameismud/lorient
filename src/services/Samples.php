@@ -113,11 +113,12 @@ class Samples extends Component
     public function modifyCart( $userRef, $orderRef ) {
         $user = Craft::$app->getUser();
         $site = Craft::$app->getSites()->getCurrentSite();
-        $rels = SampleRecord::updateAll(['order'=>$orderRef],[
-            'owner' => $userRef,
+        $rels = SampleRecord::updateAll(['order'=>(string)$orderRef],[
+            'owner' => (string)$userRef,
             'order' => NULL,
-            'siteId' => $site->id
-        ]);        
+            'siteId' => (string)$site->id
+        ]);
+        return $rels;
     }
 
     // Name: checkCart
