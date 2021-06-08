@@ -468,6 +468,7 @@ class LorientVariable
         $userRef = $this->getUser();
         // abstract to service?
         $cart = Lorient::getInstance()->samples->getCart( $userRef, $id );
+
         $response = array();
         foreach( $cart AS $item) $response[] = $item['element'];
 
@@ -504,6 +505,7 @@ class LorientVariable
         $userRef = $this->getUser();
         // abstract to service?
         $cart = Lorient::getInstance()->samples->getCart( $userRef, $id );
+
         $response = array();
         $ids = array();
         foreach( $cart AS $item) {

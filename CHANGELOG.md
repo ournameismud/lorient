@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
-## 0.1.11 - 2021-06-07
+## 0.1.11-12 - 2021-06-07
 ### Fixed
 - (string) to UpdateAll (SQL Strict errors)
 
