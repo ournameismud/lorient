@@ -42,12 +42,23 @@ class Samples extends Component
     public function getCart( $userRef, $id = NULL )
     {
         $site = Craft::$app->getSites()->getCurrentSite();
-        $rels = SampleRecord::find()
+        if ($id) {
+            $rels = SampleRecord::find()
             ->where([
-                'owner' => $userRef,
-                'order' => $id,
-                'siteId' => $site->id
+                'owner' => (string)$userRef,
+                'order' => (string)$id,
+                'siteId' => (string)$site->id
             ])->all();
+        } else {
+            $rels = SampleRecord::find()
+            ->where([
+                'owner' => (string)$userRef,
+                'order' => NULL,
+                'siteId' => (string)$site->id
+            ])->all();
+        }
+        // Craft::dd($rels);
+
         return $rels;
     }
 
@@ -68,7 +79,7 @@ class Samples extends Component
     {
         $rels = SampleRecord::find()
             ->where([
-                'order' => $id
+                'order' => (string)$id
             ])->all();
         return $rels;
     }
@@ -89,10 +100,10 @@ class Samples extends Component
     public function convertCart( $userRef ) {
         $user = Craft::$app->getUser();
         $site = Craft::$app->getSites()->getCurrentSite();
-        $rels = SampleRecord::updateAll(['owner'=>$user->id],[
-            'owner' => $userRef,
+        $rels = SampleRecord::updateAll(['owner'=>(string)$user->id],[
+            'owner' => (string)$userRef,
             'order' => NULL,
-            'siteId' => $site->id
+            'siteId' => (string)$site->id
         ]);        
     }
 
@@ -117,8 +128,7 @@ class Samples extends Component
             'owner' => (string)$userRef,
             'order' => NULL,
             'siteId' => (string)$site->id
-        ]);
-        return $rels;
+        ]);        
     }
 
     // Name: checkCart
@@ -140,9 +150,9 @@ class Samples extends Component
         $site = Craft::$app->getSites()->getCurrentSite();
         $rels = SampleRecord::find()
             ->where([
-                'owner' => $userRef,
+                'owner' => (string)$userRef,
                 'order' => NULL,
-                'element' => $element,
+                'element' => (string)$element,
                 'siteId' => $site->id
             ])->all();
         return $rels;
@@ -165,9 +175,9 @@ class Samples extends Component
     {
         $site = Craft::$app->getSites()->getCurrentSite();
         $rels = SampleRecord::deleteAll([
-                'owner' => $userRef,
+                'owner' => (string)$userRef,
                 'order' => NULL,
-                'siteId' => $site->id
+                'siteId' => (string)$site->id
             ]);
         return $rels;
     }
@@ -190,10 +200,10 @@ class Samples extends Component
     {
         $site = Craft::$app->getSites()->getCurrentSite();
         $rels = SampleRecord::deleteAll([
-                'element' => $element,
-                'owner' => $userRef,
+                'element' => (string)$element,
+                'owner' => (string)$userRef,
                 'order' => NULL,
-                'siteId' => $site->id
+                'siteId' => (string)$site->id
             ]);
         return $rels;
     }
@@ -217,10 +227,10 @@ class Samples extends Component
         $site = Craft::$app->getSites()->getCurrentSite();
         $sample = SampleRecord::find()
             ->where([
-                'owner' => $userRef,
+                'owner' => (string)$userRef,
                 'order' => NULL,
-                'element' => $element,
-                'siteId' => $site->id
+                'element' => (string)$element,
+                'siteId' => (string)$site->id
             ])->one();        
         
         if (!$sample)  {
@@ -290,14 +300,14 @@ class Samples extends Component
         if( $sampleId ) {
             $samples = SampleRecord::find()
             ->where([
-                'id' => $sampleId
+                'id' => (string)$sampleId
             ])->one();    
         } else {
             $samples = SampleRecord::find()
             ->where([
-                'owner' => $user->id,
+                'owner' => (string)$user->id,
                 // 'element' => $element,
-                'siteId' => $site->id
+                'siteId' => (string)$site->id
             ])->andWhere(['not',['specs' => null]])->all();    
         }
         
