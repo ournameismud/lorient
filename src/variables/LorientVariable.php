@@ -134,6 +134,32 @@ class LorientVariable
         return $response;
     }
 
+    public function getSwatches( $swatches )
+    {
+        $response = [];
+        foreach($swatches AS $swatch) {
+            $segments = explode('/', $swatch);
+            // $response[] = substr(end($segments),0,-4);
+            $response[] = end($segments);
+        }
+        return $response;
+    }
+
+    public function getSamplesByOrder( $orderId )
+    {
+        $samples = Lorient::getInstance()->samples->getSamplesByOrder( $orderId );
+        $response = [];
+        foreach ($samples AS $sample) {
+            $tmpResponse = [];
+            $tmpResponse['id'] = $sample->id;
+            $tmpResponse['order'] = $sample->order;
+            $tmpResponse['element'] = $sample->element;
+            $tmpResponse['specs'] = json_decode($sample->specs);
+            $response[] = $tmpResponse;
+        }
+        return $response;
+    }
+
     // Name: 
     //      getAddress
     // Purpose: 
