@@ -313,4 +313,14 @@ class Samples extends Component
         
         return $samples;
     }
+
+    public function getSamplesByOrder( $orderId )
+    {
+
+        $samples = SampleRecord::find()
+            ->where([
+                'order' => (string)$orderId
+            ])->all();
+        return $samples;
+    }
 }

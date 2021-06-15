@@ -65,10 +65,22 @@
 		</tr>
 	</table>
 
+	{% set samples = craft.lorient.getSamplesByOrder(order.id) %}
+
 	<h3>Products</h3>
 	<table class="data fullwidth">
-	{% for entry in entries %}
-	<tr><td>{# <a href="{{ entry.url }}"> #}{{ entry.title }}{# </a> #}</td></tr>
+		<tr><th>Product</th><th>Type</th><th>Size</th><th>Colour</th><th>Finish</th></tr>
+	{% for sample in samples %}
+	{% set entry = craft.entries().id(sample.element).one() %}
+	{% set specs = sample.specs %}
+	<tr>
+		<td>{{ entry.title }}</td>
+		<td>{{ entry.section }}</td>
+		<td>{{ specs ? specs.size|join(', ') }}</td>
+		<td>{{ specs ? specs.color|join(', ') }}</td>
+		{% set swatches = specs.finish is defined ? craft.lorient.getSwatches(specs.finish) : null %}
+		<td>{{ swatches ? swatches|join(', ') }}</td>
+	</tr>
 	{% endfor %}
 	</table>
 	
