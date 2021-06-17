@@ -55,59 +55,70 @@
     		<th></th>
     	</tr>
     </thead>
+
     {% for order in orders|slice(offset,limit) %}
-    {% set cart = craft.lorient.getCartById( order.id ) %}
-    {% set registeredOwner = false %}    
-    {% if order.owner matches '/^\\d+$/' %}
-    {% set owner = craft.users({ id: order.owner })|first %}
-    {% set registeredOwner = true %}
-    {% else %}
-    {% set owner = order.owner %}
-    {% endif %}
-    {% set address = craft.lorient.getAddressById( order.addressId ) %}
-    <tr>
-    	<td>{{ order.id }}</td>
-    	<td>
-    		<a href="{{ url(craft.request.url) ~ '?key=owner&value=' ~ order.owner  }}">
-    			{{ registeredOwner and owner.fullName|length ? owner.fullName : address.firstName ~ ' ' ~ address.secondName }}
-    		</a>
-    	&lt;{{ address.email }}&gt;
-    	</td>
-    	<td>{{ order.dateCreated|date('j M Y') }}</td>
-		<td>{{ order.projectRef }}</td>
-    	<td><a href="{{ url(craft.request.url) ~ '?key=status&value=' ~ order.status  }}">{{ order.status|ucfirst }}</a></td>
-    	<td>{{ cart|length }}</td>
-    	<td><a href="{{ url('lorient/order/' ~ order.id|hash ) }}">Browse Order</a></td>    	
-    </tr>
+
+	    {% set cart = craft.lorient.getCartById( order.id ) %}
+	    {% set registeredOwner = false %}
+	    {% if order.owner matches '/^\\d+$/' %}
+	    {% set owner = craft.users({ id: order.owner })|first %}
+	    {% set registeredOwner = true %}
+	    {% else %}
+	    {% set owner = order.owner %}
+	    {% endif %}
+	    {% set address = craft.lorient.getAddressById( order.addressId ) %}
+
+	    <tr>
+	    	<td>{{ order.id }}</td>
+	    	<td>
+	    		<a href="{{ url(craft.request.url) ~ '?key=owner&value=' ~ order.owner  }}">
+	    			{{ registeredOwner and owner.fullName|length ? owner.fullName : address.firstName ~ ' ' ~ address.secondName }}
+	    		</a>
+	    	&lt;{{ address is not null ? address.email }}&gt;
+	    	</td>
+	    	<td>{{ order.dateCreated|date('j M Y') }}</td>
+			<td>{{ order.projectRef }}</td>
+	    	<td><a href="{{ url(craft.request.url) ~ '?key=status&value=' ~ order.status  }}">{{ order.status|ucfirst }}</a></td>
+	    	<td>{{ cart|length }}</td>
+	    	<td><a href="{{ url('lorient/order/' ~ order.id|hash ) }}">Browse Order</a></td>
+	    </tr>
+
     {% endfor %}
 	</table>
 	
 	{% if pp > 1 %}	
-	{% set f = offset - 2 %}
-	{% set f = f < 0 ? 0 : f %}
-	{% set l = offset + 2 %}
-	{% set l = l > (pp-1) ? (pp - 	1) : l %}
 
-	{% if (offset+1) >= (pp * limit) %}
-	<a href="{{ baseUrl ~ '&o=0' }}" class="btn">First</a>
-	<a href="{{ baseUrl ~ '&o=' ~ (offset - (1*limit)) }}" class="btn">Previous</a>
-	{% else %}
-	<a href="#" class="btn disabled">First</a>
-	<a href="#" class="btn disabled">Previous</a>
-	{% endif %}
+		{% set basePage = offset / limit %}
+		{% set start = basePage - 3 %}
+		{% set start = start < 0 ? 0 : start %}
+		{% set end = start + 6 %}
+		{% set end = end > pp ? pp : end %}
 
-	{% for i in f..l %}
-		<a href="{{ baseUrl ~ '&o=' ~ (i*limit) }}" class="btn {{ offset == i ? ' active' }}">{{ i + 1 }}</a>
-	{% endfor %}
+		{% if offset > 0 %}
+			<a href="{{ baseUrl ~ '&o=0' }}" class="btn">First</a>
+			<a href="{{ baseUrl ~ '&o=' ~ (offset - (1*limit)) }}" class="btn">Previous</a>
+			{% if start > 0 %}
+				<span class="btn disabled">…</span>
+			{% endif %}
+		{% else %}
+			<span class="btn disabled">First</span>
+			<span class="btn disabled">Previous</span>
+		{% endif %}
+		{% for i in start .. end %}
+			<a href="{{ baseUrl ~ '&o=' ~ (i*limit) }}" class="btn {{ offset == i*limit ? ' active' }}">{{ i + 1 }}</a>
+		{% endfor %}
 
+		{% if basePage < pp %}
+			{% if end < pp %}
+				<span class="btn disabled">…</span>
+			{% endif %}
+			<a href="{{ baseUrl ~ '&o=' ~ (offset + (1*limit)) }}" class="btn">Next</a>
+			<a href="{{ baseUrl ~ '&o=' ~ (pp*limit) }}" class="btn">Last</a>
+		{% else %}
+			<span class="btn disabled">Next</span>
+			<span class="btn disabled">Last</span>
+		{% endif %}
 
-	{% if (offset+1) < (pp * limit) %}
-	<a href="{{ baseUrl ~ '&o=' ~ (offset + (1*limit)) }}" class="btn">Next</a>
-	<a href="{{ baseUrl ~ '&o=' ~ (pp-1) }}" class="btn">Last</a>
-	{% else %}
-	<a href="#" class="btn disabled">Next</a>
-	<a href="#" class="btn disabled">Last</a>
-	{% endif %}
 	{% endif %}
 
 {% endblock %}

@@ -20,6 +20,9 @@ use craft\elements\Entry;
 use craft\elements\Category;
 use craft\elements\Matrix;
 
+use craft\db\Query;
+use craft\helpers\Db;
+
 /**
  * @author    @cole007
  * @package   Lorient
@@ -432,7 +435,16 @@ class LorientVariable
          
     public function getOrdersAll( $crit = null )
     {
-        $sort = array_key_exists('sort',$crit) ? $crit['sort'] : 'id'; 
+
+        $samples = (new Query())
+            ->select(['order'])
+            ->from(['{{%lorient_samples}}'])
+            ->where(['not', ['order' => NULL]])
+            ->column();
+
+        $samples = array_unique($samples);
+
+        $sort = array_key_exists('sort',$crit) ? $crit['sort'] : 'id';
         $by = array_key_exists('by',$crit) ? $crit['by'] : 'asc'; 
         $by = ($by == 'asc') ? SORT_ASC : SORT_DESC;
         
@@ -442,8 +454,12 @@ class LorientVariable
         // if (array_key_exists('offset',$crit)) $orderRecords->offset($crit['offset']);
         if (array_key_exists('key',$crit) && array_key_exists('value',$crit)) $orderRecords->where([$crit['key'] => $crit['value']]);
         // if (array_key_exists('offset',$crit)) $orderRecords->offset($crit['offset']);
-        
-        return $orderRecords->all();
+        $response = [];
+        foreach ($orderRecords->all() AS $order) {
+            if (in_array($order->id, $samples)) $response[] = $order;
+        }
+        // Craft::dd($response);
+        return $response;
     }
     
     // Name: 
