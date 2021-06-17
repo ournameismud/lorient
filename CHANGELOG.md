@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
+## 0.1.11-13 - 2021-06-17
+### Fixed
+- Address fallback issue (owner not integer)
+### Added
+- getSamplesByOrder and getSamplesByOrder variables
 
 ## 0.1.11-12 - 2021-06-07
 ### Fixed
