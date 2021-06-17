@@ -57,7 +57,7 @@ class AddressesController extends Controller
                 $addressRecord = new AddressRecord;
             } else {
                 $address = AddressRecord::find()->where(['id' => $id ])->one();    
-                if (count($address) > 0) $addressRecord = $address;
+                if ($address) $addressRecord = $address;
                 else $addressRecord = new AddressRecord; 
             }
         } else {

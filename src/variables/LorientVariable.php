@@ -184,13 +184,16 @@ class LorientVariable
         $address = array();
         $site = Craft::$app->getSites()->getCurrentSite();   
         // $getAdd
-        $address['siteId'] = $site->id;
+        $address['siteId'] = (int)$site->id;
         $address['owner'] = $userRef;
         // abstract to service?
         $addressRecord = AddressRecord::find()
             ->where($address)
             ->orderby('dateUpdated DESC')
-            ->one();            
+            ->one();
+
+        if ((string)$addressRecord->owner !== (string)$userRef) $addressRecord = null;
+        // Craft::dd($addressRecord);
         return $addressRecord;
     }
     
