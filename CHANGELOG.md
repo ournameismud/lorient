@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.1.11-14 - 2021-06-17
+### Changed
+- Order templating (back-end)
+
 ## 0.1.11-13 - 2021-06-17
 ### Fixed
 - Address fallback issue (owner not integer)
