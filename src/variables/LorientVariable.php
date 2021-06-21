@@ -195,8 +195,7 @@ class LorientVariable
             ->orderby('dateUpdated DESC')
             ->one();
 
-        if ((string)$addressRecord->owner !== (string)$userRef) $addressRecord = null;
-        // Craft::dd($addressRecord);
+        if (isset($addressRecord) && (string)$addressRecord->owner !== (string)$userRef) $addressRecord = null;
         return $addressRecord;
     }
     
