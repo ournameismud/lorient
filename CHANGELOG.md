@@ -4,15 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 0.1.11-15 - 2021-06-21
+## 0.1.16 - 2021-09-30
+### Fixed
+- Wording of finish (from .jpeg/jpg)
+- Fixed iteration errors with object (force array)
+## 0.1.15 - 2021-06-21
 ### Changed
 - Variable error if logged out
 
-## 0.1.11-14 - 2021-06-17
+## 0.1.14 - 2021-06-17
 ### Changed
 - Order templating (back-end)
 
-## 0.1.11-13 - 2021-06-17
+## 0.1.13 - 2021-06-17
 ### Fixed
 - Address fallback issue (owner not integer)
 ### Added
