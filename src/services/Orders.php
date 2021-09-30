@@ -33,6 +33,13 @@ class Orders extends Component
 
     protected $addressFields = ['title' =>'Title','firstName'=>'First Name','secondName'=>'Second Name','company'=>'Company','address1'=>'Address 1','address2'=>'Address 2','townCity'=>'Town/City','state'=>'State','postcode'=>'Postcode','telephone'=>'Telephone','email'=>'Email'];
     
+    private function getFinish($finish) {
+        $finish = explode('/',$finish);
+        $finish = end($finish);
+        $index = strrpos($finish,'.');
+        return str_replace('-',' ',substr($finish,0,$index));
+    }
+
     private function getColor( $color ) {
         $site = Craft::$app->getSites()->getCurrentSite();
         $element = Category::find()
@@ -119,7 +126,6 @@ class Orders extends Component
         $emailName = Craft::$app->config->general->custom['emailName'];
 
         $order = OrderRecord::find()->where(['id'=>$id])->one();
-
         // Craft::info( 'Order: ' . $order->id, 'ournameismud\lorient\services\orders\mailOrder:107' );
         $owner = $order->owner;
         
@@ -146,10 +152,11 @@ class Orders extends Component
         $brochures = [];
         foreach ($cart AS $item) {
             $element = Entry::find()
-               ->id( $item->element )
+                ->id( $item->element )
                ->siteId( $site->id )
                ->one(); 
-            $specs = json_decode($item->specs);
+            $specs = (array)json_decode($item->specs);
+            
             Craft::info( 'Specs: ' . $item->specs, 'ournameismud\lorient\services\orders\mailOrder:139' );
             if (is_iterable($specs) && (count($specs) > 0)) {
                 $tmpRow = $element->title . ": \r\n";
@@ -159,8 +166,7 @@ class Orders extends Component
                         if ($prop == 'finish') {
                             $tmpArr = [];
                             foreach ($array AS $src) {
-                                $tmpSrc = explode('/',$src);
-                                $tmpArr[] = end($tmpSrc);
+                                $tmpArr[] = $this->getFinish($src);
                             }
                             $tmpRow .= ': ' . implode(', ',$tmpArr);
                         } elseif(is_array($array)) {
@@ -198,7 +204,7 @@ class Orders extends Component
             $body .= "\r\nBrochures:\r\n";
             foreach ($brochures AS $value) $body .= $value . "\r\n";    
         }
-
+        
         Craft::info( 'Message: ' . $body, 'ournameismud\lorient\services\orders\mailOrder:164' );
 
         // Craft::info( 'Address: ' . $address->id, 'ournameismud\lorient\services\orders\mailOrder:110' );

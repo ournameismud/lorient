@@ -128,7 +128,7 @@ class Samples extends Component
             'owner' => (string)$userRef,
             'order' => NULL,
             'siteId' => (string)$site->id
-        ]);        
+        ]);                        
     }
 
     // Name: checkCart
