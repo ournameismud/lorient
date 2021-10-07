@@ -72,7 +72,7 @@
 		<tr><th>Product</th><th>Type</th><th>Size</th><th>Colour</th><th>Finish</th></tr>
 	{% for sample in samples %}
 	{% set entry = craft.entries().id(sample.element).one() %}
-	{% if entry and entry.section.handle == 'products' %}
+	{% if entry %}
 	{% set specs = sample.specs %}
 	<tr>
 		<td>{{ entry.title }}</td>
