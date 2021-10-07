@@ -72,6 +72,7 @@
 		<tr><th>Product</th><th>Type</th><th>Size</th><th>Colour</th><th>Finish</th></tr>
 	{% for sample in samples %}
 	{% set entry = craft.entries().id(sample.element).one() %}
+	{% if entry and entry.section.handle == 'products' %}
 	{% set specs = sample.specs %}
 	<tr>
 		<td>{{ entry.title }}</td>
@@ -81,6 +82,7 @@
 		{% set swatches = specs.finish is defined ? craft.lorient.getSwatches(specs.finish) : null %}
 		<td>{{ swatches ? swatches|join(', ') }}</td>
 	</tr>
+	{% endif %}
 	{% endfor %}
 	</table>
 	
