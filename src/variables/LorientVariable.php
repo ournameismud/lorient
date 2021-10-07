@@ -183,8 +183,7 @@ class LorientVariable
                 'finish' => $finishes
             );
             $response[] = $tmpResponse;
-        }
-        Craft::dd($response);
+        }        
         return $response;
     }
 
