@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.1.17 - 2021-10-07
+### Updated
+- Swatches under Orders colour name not hexa
 ## 0.1.16 - 2021-09-30
 ### Fixed
 - Wording of finish (from .jpeg/jpg)

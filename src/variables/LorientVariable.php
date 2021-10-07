@@ -157,7 +157,25 @@ class LorientVariable
             $tmpResponse['id'] = $sample->id;
             $tmpResponse['order'] = $sample->order;
             $tmpResponse['element'] = $sample->element;
-            $tmpResponse['specs'] = json_decode($sample->specs);
+            $specs = json_decode($sample->specs);
+            $sizes = [];
+            foreach ($specs->size AS $size) {
+                $sizes[] = $size;
+            }
+            $colors = [];
+            foreach ($specs->color AS $color) {
+                $colors[] = Lorient::getInstance()->orders->getColor($color);
+            }
+            $finishes = [];
+            foreach ($specs->finish AS $finish) {
+                $finishes[] = Lorient::getInstance()->orders->getFinish($finish);
+            }
+
+            $tmpResponse['specs'] = array(
+                'size'=>$sizes,
+                'color' => $colors,
+                'finish' => $finishes
+            );
             $response[] = $tmpResponse;
         }
         return $response;

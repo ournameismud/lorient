@@ -33,14 +33,14 @@ class Orders extends Component
 
     protected $addressFields = ['title' =>'Title','firstName'=>'First Name','secondName'=>'Second Name','company'=>'Company','address1'=>'Address 1','address2'=>'Address 2','townCity'=>'Town/City','state'=>'State','postcode'=>'Postcode','telephone'=>'Telephone','email'=>'Email'];
     
-    private function getFinish($finish) {
+    public function getFinish($finish) {
         $finish = explode('/',$finish);
         $finish = end($finish);
         $index = strrpos($finish,'.');
         return str_replace('-',' ',substr($finish,0,$index));
     }
 
-    private function getColor( $color ) {
+    public function getColor( $color ) {
         $site = Craft::$app->getSites()->getCurrentSite();
         $element = Category::find()
            ->group( 'productColours' )
